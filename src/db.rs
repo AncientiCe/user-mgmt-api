@@ -34,16 +34,22 @@ pub async fn setup_database(db: &PgPool) -> Result<()> {
     .await?;
 
     sqlx::query(
-        r#"
-        DROP TRIGGER IF EXISTS update_users_updated_at ON users;
-        CREATE TRIGGER update_users_updated_at
-            BEFORE UPDATE ON users
-            FOR EACH ROW
-            EXECUTE FUNCTION update_updated_at_column();
-        "#,
+        r#"DROP TRIGGER IF EXISTS update_users_updated_at ON users;"#
     )
-    .execute(db)
-    .await?;
+        .execute(db)
+        .await?;
+
+    sqlx::query(
+        r#"
+    CREATE TRIGGER update_users_updated_at
+        BEFORE UPDATE ON users
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+    "#
+    )
+        .execute(db)
+        .await?;
+
 
     Ok(())
 }
